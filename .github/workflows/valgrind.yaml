@@ -1,7 +1,7 @@
-name: Valgrind Check
+name: Valgrind
 
 on: 
-  - pull_request
+  - push
   - workflow_dispatch
 
 jobs:

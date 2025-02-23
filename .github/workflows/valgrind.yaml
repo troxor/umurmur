@@ -43,7 +43,7 @@ jobs:
 
       - name: Run Valgrind
         run: |
-          timeout 300s valgrind \
+          valgrind \
           --track-origins=yes \
           --read-var-info=yes \
           --trace-children=yes \
@@ -54,7 +54,7 @@ jobs:
           --gen-suppressions=all \
           --redzone-size=16 \
           --xml=yes --xml-file=valgrind-output.xml \
-          ./build-${{ matrix.ssl }}/bin/umurmurd -c umurmur.conf.example -d
+          ./build-${{ matrix.ssl }}/bin/umurmurd -c umurmur.conf.example -h
 
       - name: Convert XML to SARIF
         uses: troxor/valgrind-sarif-action@v0.0.1

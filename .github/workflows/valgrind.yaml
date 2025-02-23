@@ -1,6 +1,6 @@
 name: Valgrind
 
-on: 
+on:
   - push
   - workflow_dispatch
 
@@ -42,13 +42,19 @@ jobs:
           cmake --build ./build-${{ matrix.ssl }}
 
       - name: Run Valgrind
-        uses: troxor/valgrind-action@v2.0.0
-        with:
-          binary_path: ./build-${{ matrix.ssl }}/bin/umurmurd
-          binary_args: "-c umurmur.conf -d"
-          track_file_descriptors: false
-          xml_output_file: "valgrind-output.xml"
-          timeout: 300s
+        run: |
+          timeout 300s valgrind \
+          --track-origins=yes \
+          --read-var-info=yes \
+          --trace-children=yes \
+          --show-leak-kinds=all \
+          --read-inline-info=yes \
+          --errors-for-leak-kinds=all \
+          --expensive-definedness-checks=yes \
+          --gen-suppressions=all \
+          --redzone-size=16 \
+          --xml=yes --xml-file=valgrind-output.xml \
+          ./build-${{ matrix.ssl }}/bin/umurmurd -c umurmur.conf.example -d
 
       - name: Convert XML to SARIF
         uses: troxor/valgrind-sarif-action@v0.0.1

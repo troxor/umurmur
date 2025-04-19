@@ -19,6 +19,7 @@ jobs:
         with:
           token: ${{ github.token }}
           tag: ${{ github.ref_name }}
+          includeInvalidCommits: true
 
       - name: Create Release
         uses: ncipollo/release-action@v1.12.0

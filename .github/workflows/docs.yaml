@@ -4,13 +4,15 @@ permissions:
 
 on:
   workflow_dispatch:
+  push:
   pull_request:
     types:
       - closed
+      - opened
 
 jobs:
   update-contributors:
-    if: github.event.pull_request.merged == true
+    # if: github.event.pull_request.merged == true
     name: Update README with the latest contributors
     runs-on: ubuntu-latest
     permissions:
@@ -19,5 +21,9 @@ jobs:
     steps:
       - name: Contributors README Action
         uses: akhilmhdh/contributors-readme-action@v2.3.10
+        with:
+          image_size: 60 # Default: 100
+          columns_per_row: 10 # Default: 6
+          collaborators: all
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

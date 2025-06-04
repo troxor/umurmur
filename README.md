@@ -8,7 +8,9 @@ uMurmur is a minimalistic Mumble server primarily targeted to run on embedded co
 
 [Build instructions](https://github.com/umurmur/umurmur/wiki/Building) can be found in the [wiki](https://github.com/umurmur/umurmur/wiki).
 
+
 # Contributors
+
 
 # Support/Contact/Documentation
 

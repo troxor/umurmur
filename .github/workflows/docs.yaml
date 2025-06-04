@@ -7,6 +7,7 @@ on:
   pull_request:
     types:
       - closed
+      - opened
 
 jobs:
   update-contributors:
@@ -19,5 +20,9 @@ jobs:
     steps:
       - name: Contributors README Action
         uses: akhilmhdh/contributors-readme-action@v2.3.10
+        with:
+          image_size: 60 # Default: 100
+          columns_per_row: 10 # Default: 6
+          collaborators: all
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

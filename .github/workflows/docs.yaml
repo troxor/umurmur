@@ -13,17 +13,22 @@ on:
 jobs:
   update-contributors:
     # if: github.event.pull_request.merged == true
-    name: Update README with the latest contributors
     runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
     steps:
-      - name: Contributors README Action
-        uses: akhilmhdh/contributors-readme-action@v2.3.10
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Update Contributors section in README.md
+        uses: BobAnkh/add-contributors@v0.2.2
         with:
-          image_size: 60 # Default: 100
-          columns_per_row: 10 # Default: 6
-          collaborators: all
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONTRIBUTOR: '# Contributors'
+          COLUMN_PER_ROW: '10'
+          ACCESS_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          IMG_WIDTH: '100'
+          FONT_SIZE: '12'
+          PATH: '/README.md'
+          COMMIT_MESSAGE: 'docs(README): update contributors'
+          AVATAR_SHAPE: 'round'

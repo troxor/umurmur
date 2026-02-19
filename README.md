@@ -92,13 +92,6 @@ uMurmur is a minimalistic Mumble server primarily targeted to run on embedded co
         </a>
     </td>
     <td align="center" style="word-wrap: break-word; width: 150.0; height: 150.0">
-        <a href=https://github.com/omar-polo>
-            <img src=https://avatars.githubusercontent.com/u/47739920?v=4 width="100;"  style="border-radius:50%;align-items:center;justify-content:center;overflow:hidden;padding-top:10px" alt=Omar Polo/>
-            <br />
-            <sub style="font-size:12px"><b>Omar Polo</b></sub>
-        </a>
-    </td>
-    <td align="center" style="word-wrap: break-word; width: 150.0; height: 150.0">
         <a href=https://github.com/omor1>
             <img src=https://avatars.githubusercontent.com/u/4326436?v=4 width="100;"  style="border-radius:50%;align-items:center;justify-content:center;overflow:hidden;padding-top:10px" alt=Omri Mor/>
             <br />
@@ -126,8 +119,6 @@ uMurmur is a minimalistic Mumble server primarily targeted to run on embedded co
             <sub style="font-size:12px"><b>Rosen Penev</b></sub>
         </a>
     </td>
-</tr>
-<tr>
     <td align="center" style="word-wrap: break-word; width: 150.0; height: 150.0">
         <a href=https://github.com/wfdewith>
             <img src=https://avatars.githubusercontent.com/u/2306085?v=4 width="100;"  style="border-radius:50%;align-items:center;justify-content:center;overflow:hidden;padding-top:10px" alt=Wim de With/>
@@ -135,6 +126,8 @@ uMurmur is a minimalistic Mumble server primarily targeted to run on embedded co
             <sub style="font-size:12px"><b>Wim de With</b></sub>
         </a>
     </td>
+</tr>
+<tr>
     <td align="center" style="word-wrap: break-word; width: 150.0; height: 150.0">
         <a href=https://github.com/l2dy>
             <img src=https://avatars.githubusercontent.com/u/14329097?v=4 width="100;"  style="border-radius:50%;align-items:center;justify-content:center;overflow:hidden;padding-top:10px" alt=Zero King/>
@@ -154,6 +147,13 @@ uMurmur is a minimalistic Mumble server primarily targeted to run on embedded co
             <img src=https://avatars.githubusercontent.com/u/24496265?v=4 width="100;"  style="border-radius:50%;align-items:center;justify-content:center;overflow:hidden;padding-top:10px" alt=l2dybot/>
             <br />
             <sub style="font-size:12px"><b>l2dybot</b></sub>
+        </a>
+    </td>
+    <td align="center" style="word-wrap: break-word; width: 150.0; height: 150.0">
+        <a href=https://github.com/omar-polo>
+            <img src=https://avatars.githubusercontent.com/u/47739920?v=4 width="100;"  style="border-radius:50%;align-items:center;justify-content:center;overflow:hidden;padding-top:10px" alt=Omar Polo/>
+            <br />
+            <sub style="font-size:12px"><b>Omar Polo</b></sub>
         </a>
     </td>
     <td align="center" style="word-wrap: break-word; width: 150.0; height: 150.0">

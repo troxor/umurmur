@@ -260,7 +260,7 @@ void recheckCodecVersions(client_t *connectingClient)
 		// it as alpha and announce it. If another codec now got the
 		// majority set it as the opposite of the currently valid bPreferAlpha
 		// and announce it.
-		if (version == (uint32_t)0x8000000b)
+		if ((uint32_t)version == 0x8000000bU)
 			bPreferAlpha = true;
 		else
 			bPreferAlpha = !bPreferAlpha;
@@ -466,7 +466,6 @@ int Client_read(client_t *client)
 		return 0;
 	}
 	if (!client->SSLready) {
-		int rc;
 		rc = SSLi_nonblockaccept(client->ssl, &client->SSLready);
 		if (rc < 0) {
 			Client_free(client);
@@ -862,6 +861,7 @@ int Client_read_udp(int udpsock)
 		case UDPVoiceCELTBeta:
 			if (bOpus)
 				break;
+			/* fall through */
 		case UDPVoiceOpus:
 			Client_voiceMsg(itr, buffer, len);
 			break;
@@ -966,23 +966,23 @@ int Client_voiceMsg(client_t *client, uint8_t *data, int len)
 		}
 	} else if ((vt = Voicetarget_get_id(client, target)) != NULL) { /* Targeted whisper */
 		int i;
-		channel_t *ch;
+		channel_t *target_ch;
 		/* Channels */
 		for (i = 0; i < TARGET_MAX_CHANNELS && vt->channels[i].channel != -1; i++) {
 			buffer[0] = (uint8_t) (type | 1);
-			Log_debug("Whisper channel %d", vt->channels[i]);
-			ch = Chan_fromId(vt->channels[i].channel);
-			if (ch == NULL)
+			Log_debug("Whisper channel %d", vt->channels[i].channel);
+			target_ch = Chan_fromId(vt->channels[i].channel);
+			if (target_ch == NULL)
 				continue;
-			list_iterate(itr, &ch->clients) {
+			list_iterate(itr, &target_ch->clients) {
 				client_t *c;
 				c = list_get_entry(itr, client_t, chan_node);
 				Client_send_voice(client, c, buffer, pds->offset + 1, poslen);
 			}
 			/* Whisper to channel links? */
-			if (vt->channels[i].linked && !list_empty(&ch->channel_links)) {
+			if (vt->channels[i].linked && !list_empty(&target_ch->channel_links)) {
 				struct dlist *ch_itr;
-				list_iterate(ch_itr, &ch->channel_links) {
+				list_iterate(ch_itr, &target_ch->channel_links) {
 					channellist_t *chl;
 					channel_t *ch_link;
 					chl = list_get_entry(ch_itr, channellist_t, node);
@@ -990,7 +990,7 @@ int Client_voiceMsg(client_t *client, uint8_t *data, int len)
 					list_iterate(itr, &ch_link->clients) {
 						client_t *c;
 						c = list_get_entry(itr, client_t, chan_node);
-						Log_debug("Linked whisper from %s -> %s", ch->name, ch_link->name);
+						Log_debug("Linked whisper from %s -> %s", target_ch->name, ch_link->name);
 						Client_send_voice(client, c, buffer, pds->offset + 1, poslen);
 					}
 				}
@@ -999,14 +999,14 @@ int Client_voiceMsg(client_t *client, uint8_t *data, int len)
 			if (vt->channels[i].children) {
 				struct dlist chanlist, *ch_itr;
 				init_list_entry(&chanlist);
-				Chan_buildTreeList(ch, &chanlist);
+				Chan_buildTreeList(target_ch, &chanlist);
 				list_iterate(ch_itr, &chanlist) {
 					channel_t *sub;
 					sub = list_get_entry(ch_itr, channellist_t, node)->chan;
 					list_iterate(itr, &sub->clients) {
 						client_t *c;
 						c = list_get_entry(itr, client_t, chan_node);
-						Log_debug("Whisper to child from %s -> %s", ch->name, sub->name);
+						Log_debug("Whisper to child from %s -> %s", target_ch->name, sub->name);
 						Client_send_voice(client, c, buffer, pds->offset + 1, poslen);
 					}
 				}

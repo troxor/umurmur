@@ -155,6 +155,7 @@ static void initKey()
 #ifndef USE_MBEDTLS_HAVEGE
 int urandom_bytes(void *ctx, unsigned char *dest, size_t len)
 {
+	(void)ctx;
 #if (MBEDTLS_VERSION_MAJOR >= 3)
 #if defined(MBEDTLS_USE_PSA_CRYPTO)
 	mbedtls_psa_get_random(MBEDTLS_PSA_RANDOM_STATE, dest, len);
@@ -178,6 +179,9 @@ int urandom_bytes(void *ctx, unsigned char *dest, size_t len)
 #define DEBUG_LEVEL 3
 static void pssl_debug(void *ctx, int level, const char *file, int line, const char *str)
 {
+	(void)ctx;
+	(void)file;
+	(void)line;
     if (level <= DEBUG_LEVEL)
 		Log_info("mbedTLS [level %d]: %s", level, str);
 }
@@ -186,7 +190,6 @@ mbedtls_ssl_config *conf;
 
 void SSLi_init(void)
 {
-	char verstring[12];
 	int rc;
 
 	initCert();
@@ -298,6 +301,7 @@ SSL_handle_t *SSLi_newconnection(int *fd, bool_t *SSLready)
 	mbedtls_ssl_context *ssl;
 	mbedtls_ssl_session *ssn;
 	int rc;
+	(void)SSLready;
 
 	ssl = Memory_safeCalloc(1, sizeof(mbedtls_ssl_context));
 	ssn = Memory_safeCalloc(1, sizeof(mbedtls_ssl_session));
@@ -356,6 +360,7 @@ int SSLi_write(SSL_handle_t *ssl, uint8_t *buf, int len)
 
 int SSLi_get_error(SSL_handle_t *ssl, int code)
 {
+	(void)ssl;
 	return code;
 }
 

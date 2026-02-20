@@ -54,13 +54,13 @@
 #include <gnutls/gnutls.h>
 #include <gnutls/crypto.h>
 
-#define CRYPT_AES_KEY struct aes_ctx
+#define CRYPT_AES_KEY struct aes128_ctx
 #define CRYPT_RANDOM_BYTES(dest, size) gnutls_rnd(GNUTLS_RND_KEY, (dest), (size))
-#define CRYPT_SET_ENC_KEY(dest, source, size) aes_set_encrypt_key((dest), (size)/8, (source));
-#define CRYPT_SET_DEC_KEY(dest, source, size) aes_set_decrypt_key((dest), (size)/8, (source));
+#define CRYPT_SET_ENC_KEY(dest, source, size) do { (void)(size); aes128_set_encrypt_key((dest), (source)); } while (0)
+#define CRYPT_SET_DEC_KEY(dest, source, size) do { (void)(size); aes128_set_decrypt_key((dest), (source)); } while (0)
 
-#define CRYPT_AES_ENCRYPT(src, dest, ctx) aes_encrypt(&(ctx)->encrypt_key, AES_BLOCK_SIZE, (uint8_t *)(dest), (uint8_t *)(src))
-#define CRYPT_AES_DECRYPT(src, dest, ctx) aes_decrypt(&(ctx)->decrypt_key, AES_BLOCK_SIZE, (uint8_t *)(dest), (uint8_t *)(src))
+#define CRYPT_AES_ENCRYPT(src, dest, ctx) aes128_encrypt(&(ctx)->encrypt_key, AES_BLOCK_SIZE, (uint8_t *)(dest), (uint8_t *)(src))
+#define CRYPT_AES_DECRYPT(src, dest, ctx) aes128_decrypt(&(ctx)->decrypt_key, AES_BLOCK_SIZE, (uint8_t *)(dest), (uint8_t *)(src))
 
 #else
 

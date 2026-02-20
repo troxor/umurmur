@@ -4,20 +4,19 @@ permissions:
 
 on:
   workflow_dispatch:
-  pull_request:
-    types:
-      - closed
+  push:
+    branches:
+      - master
 
 jobs:
   update-contributors:
-    if: github.event.pull_request.merged == true
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Update Contributors section in README.md
         uses: BobAnkh/add-contributors@v0.2.2

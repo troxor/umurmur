@@ -7,6 +7,9 @@ function(SelectTLSBackend SSL)
   set(LIBRARIES "")
   set(INCLUDE_DIR "")
   set(LIBRARY_DIR "")
+  # Prevent stale TLS backend state from leaking between reconfigures
+  set(USE_MBEDTLS OFF PARENT_SCOPE)
+  set(USE_GNUTLS OFF PARENT_SCOPE)
 
   if("${SSL}" STREQUAL "openssl")
     find_package(OpenSSL REQUIRED)

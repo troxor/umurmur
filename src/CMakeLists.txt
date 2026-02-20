@@ -57,7 +57,6 @@ if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
     -Wall
     -Wextra
     -Wformat=2
-    -Wshadow
     -Wpointer-arith
     -Wundef
   )

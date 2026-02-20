@@ -78,7 +78,7 @@ static void sendPermissionDenied(client_t *client, const char *reason)
 
 static void addTokens(client_t *client, message_t *msg)
 {
-	int i;
+	size_t i;
 	if (client->tokencount + msg->payload.authenticate->n_tokens < MAX_TOKENS) {
 		/* Check lengths first */
 		for (i = 0; i < msg->payload.authenticate->n_tokens; i++) {
@@ -436,13 +436,13 @@ void Mh_handle_message(client_t *client, message_t *msg)
 		target = NULL;
 		/* Only allow state changes for for the self user unless an admin is issuing */
 		if (msg->payload.userState->has_session &&
-		    msg->payload.userState->session != client->sessionId && !client->isAdmin) {
+		    msg->payload.userState->session != (uint32_t)client->sessionId && !client->isAdmin) {
 			sendPermissionDenied(client, "Permission denied");
 			break;
 		}
-		if (msg->payload.userState->has_session && msg->payload.userState->session != client->sessionId) {
+		if (msg->payload.userState->has_session && msg->payload.userState->session != (uint32_t)client->sessionId) {
 			while (Client_iterate(&target) != NULL) {
-				if (target->sessionId == msg->payload.userState->session)
+				if ((uint32_t)target->sessionId == msg->payload.userState->session)
 					break;
 			}
 			if (target == NULL) {
@@ -598,13 +598,13 @@ void Mh_handle_message(client_t *client, message_t *msg)
 		}
 
 		if (msg->payload.textMessage->n_channel_id > 0) { /* To channel */
-			int i;
+			size_t i;
 			channel_t *ch_itr;
 			for (i = 0; i < msg->payload.textMessage->n_channel_id; i++) {
 				ch_itr = NULL;
 				do {
 					Chan_iterate(&ch_itr);
-				} while (ch_itr != NULL && ch_itr->id != msg->payload.textMessage->channel_id[i]);
+				} while (ch_itr != NULL && (uint32_t)ch_itr->id != msg->payload.textMessage->channel_id[i]);
 				if (ch_itr != NULL) {
 					struct dlist *itr;
 					list_iterate(itr, &ch_itr->clients) {
@@ -620,12 +620,12 @@ void Mh_handle_message(client_t *client, message_t *msg)
 			} /* for */
 		}
 		if (msg->payload.textMessage->n_session > 0) { /* To user */
-			int i;
+			size_t i;
 			client_t *itr;
 			for (i = 0; i < msg->payload.textMessage->n_session; i++) {
 				itr = NULL;
 				while (Client_iterate_authenticated(&itr)) {
-					if (itr->sessionId == msg->payload.textMessage->session[i]) {
+					if ((uint32_t)itr->sessionId == msg->payload.textMessage->session[i]) {
 						Msg_inc_ref(msg);
 						Client_send_message(itr, msg);
 						Log_debug("Text message to session ID %d", itr->sessionId);
@@ -640,7 +640,8 @@ void Mh_handle_message(client_t *client, message_t *msg)
 
 	case VoiceTarget:
 	{
-		int i, j, count, targetId = msg->payload.voiceTarget->id;
+		size_t i, j, count;
+		uint32_t targetId = msg->payload.voiceTarget->id;
 		struct _MumbleProto__VoiceTarget__Target *target;
 
 		if (!targetId || targetId >= 0x1f)
@@ -815,7 +816,7 @@ void Mh_handle_message(client_t *client, message_t *msg)
 		if (!msg->payload.userStats->has_session)
 			sendPermissionDenied(client, "Not supported by uMurmur");
 		while (Client_iterate_authenticated(&target)) {
-			if (target->sessionId == msg->payload.userStats->session)
+			if ((uint32_t)target->sessionId == msg->payload.userStats->session)
 				break;
 		}
 		if (!target) /* Not found */
@@ -920,7 +921,7 @@ void Mh_handle_message(client_t *client, message_t *msg)
 			break;
 		}
 		while (Client_iterate(&target) != NULL) {
-			if (target->sessionId == msg->payload.userRemove->session)
+			if ((uint32_t)target->sessionId == msg->payload.userRemove->session)
 				break;
 		}
 		if (target == NULL) {

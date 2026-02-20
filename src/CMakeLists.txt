@@ -41,6 +41,28 @@ link_directories(${LIBCONFIG_LIB_DIR}
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
+set_target_properties(${PROJECT_NAME} PROPERTIES
+  C_STANDARD 99
+  C_STANDARD_REQUIRED YES
+  C_EXTENSIONS YES
+)
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+  _GNU_SOURCE
+  _XOPEN_SOURCE=700
+)
+
+if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+  target_compile_options(${PROJECT_NAME} PRIVATE
+    -Wall
+    -Wextra
+    -Wformat=2
+    -Wshadow
+    -Wpointer-arith
+    -Wundef
+  )
+endif()
+
 target_link_libraries(${PROJECT_NAME}
                       ${LIBCONFIG_LIBRARIES}
                       ${PROTOBUFC_LIBRARIES}

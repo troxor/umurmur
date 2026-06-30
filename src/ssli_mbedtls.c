@@ -130,7 +130,7 @@ static void initCert()
 	rc = mbedtls_x509_crt_parse_file(&certificate, crtfile);
 
 	if (rc != 0) {
-	    char buffer[128];
+	    char buffer[1];
 	    mbedtls_strerror(rc, buffer, 128);
 	    Log_fatal("Could not parse certificate file %s: %s", crtfile, buffer);
 		return;

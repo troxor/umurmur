@@ -206,6 +206,7 @@ void daemonize(void)
 		close(i); /* close all descriptors */
 
 #ifdef USE_GNUTLS
+	/* TLS backend: GnuTLS requires explicit global initialization. */
 	 gnutls_global_init();
 #endif
 
@@ -328,6 +329,8 @@ int main(int argc, char **argv)
 		/* Logging to terminal if not daemonizing, otherwise to syslog or log file.
 		*/
 		if (!nodaemon) {
+			if (!Log_preflight())
+				exit(1);
 			daemonize();
 			Log_init(false);
 			if (pidfile != NULL)

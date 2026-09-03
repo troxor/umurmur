@@ -5,6 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0](https://github.com/troxor/umurmur/compare/v0.4.1...v0.5.0) (2026-09-03)
+
+
+### Added
+
+* Add CodeRabbit AI ([#237](https://github.com/troxor/umurmur/issues/237)) ([4d1a8bc](https://github.com/troxor/umurmur/commit/4d1a8bc7d95d8ed367e4c742c4171a804bb9ace2))
+* Autogenerate certificate with GnuTLS ([#269](https://github.com/troxor/umurmur/issues/269)) ([4ed5dbb](https://github.com/troxor/umurmur/commit/4ed5dbb7b31d6ad3e646ca578c1d5357d632f741))
+* Autogenerate certificate with Mbed TLS ([#268](https://github.com/troxor/umurmur/issues/268)) ([39bc055](https://github.com/troxor/umurmur/commit/39bc0552e97427210a64a78cef292b7890f9576b))
+* Display SSL implementation in version string ([#270](https://github.com/troxor/umurmur/issues/270)) ([eb01ffc](https://github.com/troxor/umurmur/commit/eb01ffc0949b8f85701d681f5d19b3e6ff23ddea))
+* implement pledge and unveil for OpenBSD ([#239](https://github.com/troxor/umurmur/issues/239)) ([8011c8b](https://github.com/troxor/umurmur/commit/8011c8b03a4026e9059a92182bf6a3d851e77898))
+* Remove legacy codec support ([#262](https://github.com/troxor/umurmur/issues/262)) ([0a1b67d](https://github.com/troxor/umurmur/commit/0a1b67d7f37f50b1ca74a72f29cae81f9f2ca793))
+
+
+### Fixed
+
+* Add format attribute to log wrappers ([#256](https://github.com/troxor/umurmur/issues/256)) ([07f2693](https://github.com/troxor/umurmur/commit/07f269376a308ccbeb428487af071d20be7ba666))
+* bound TCP body reads to remaining buffer space ([#245](https://github.com/troxor/umurmur/issues/245)) ([8bfaed4](https://github.com/troxor/umurmur/commit/8bfaed4f857a6c2f0a80efa5fdc4fb2828e3d2be))
+* builds on MacOS ([#250](https://github.com/troxor/umurmur/issues/250)) ([ae30ccf](https://github.com/troxor/umurmur/commit/ae30ccf040e81c89cdac62acb0ed6248a00f2d81))
+* Correct endian header and fix non-Linux LP64 build ([#246](https://github.com/troxor/umurmur/issues/246)) ([392f3a2](https://github.com/troxor/umurmur/commit/392f3a21a10c80c0f39f9eca0bac91f9ca22048a))
+* Memory leak in OpenSSL X509 handling ([#271](https://github.com/troxor/umurmur/issues/271)) ([9a0a947](https://github.com/troxor/umurmur/commit/9a0a947ada4733537249254485f3b079b7bcec01))
+* Remove unused parameter in Sharedmemory_init() ([#253](https://github.com/troxor/umurmur/issues/253)) ([5f62561](https://github.com/troxor/umurmur/commit/5f6256123815672d164c9fddf69a861e8d0f757e))
+* Simplify extension feature-test macros ([#252](https://github.com/troxor/umurmur/issues/252)) ([c41b614](https://github.com/troxor/umurmur/commit/c41b6140f95200e18cd112aaa5eae58525d23a62))
+* Tidy extraneous newlines ([#261](https://github.com/troxor/umurmur/issues/261)) ([071657c](https://github.com/troxor/umurmur/commit/071657c5f1d8eb1cbd1a74c57b190a9cdfb06f04))
+* Usage typos ([#272](https://github.com/troxor/umurmur/issues/272)) ([8159d91](https://github.com/troxor/umurmur/commit/8159d910e0c7394d9757fdb864897178facf9945))
+* Use properly-sized buffer for system_string ([#255](https://github.com/troxor/umurmur/issues/255)) ([427450a](https://github.com/troxor/umurmur/commit/427450a91237b46791abaf4c69bb90608e8c17da))
+* Use snprintf in SSLi_init() ([#254](https://github.com/troxor/umurmur/issues/254)) ([d691392](https://github.com/troxor/umurmur/commit/d691392c01389d0b65fea4784c89d601584a8622))
+* Use-after-free crash when client is freed inside message handler ([#251](https://github.com/troxor/umurmur/issues/251)) ([01b0dea](https://github.com/troxor/umurmur/commit/01b0dea1bfa17ec4dd192ae63db91a0d315cd1a6))
+* Work around Alpine latest shipping Mbed TLS 4.x ([#238](https://github.com/troxor/umurmur/issues/238)) ([6e559ae](https://github.com/troxor/umurmur/commit/6e559ae74129d2f19af06956125f610eaf96a962))
+* Wsometimes-uninitialized ([#247](https://github.com/troxor/umurmur/issues/247)) ([0ebaaf9](https://github.com/troxor/umurmur/commit/0ebaaf9494ff24677bd488285393d7b0c177c06f))
+
 ## [0.4.1](https://github.com/umurmur/umurmur/compare/v0.4.0...v0.4.1) (2026-08-18)
 
 

@@ -1,4 +1,4 @@
-name: Build with Docker
+name: Docker (stable)
 permissions:
   contents: read
 
@@ -9,12 +9,10 @@ on:
       - cmake/**
       - CMakeLists.txt
       - Dockerfile.*
-      - .github/workflows/docker.yaml
+      - .github/workflows/docker-stable.yaml
   pull_request:
     types: [opened, synchronize]
   workflow_dispatch:
-  schedule:
-    - cron: "0 12 * * 1"
 
 jobs:
   build:
@@ -26,9 +24,7 @@ jobs:
           - { family: alpine, base: alpine:3.22 }
           - { family: alpine, base: alpine:3.23 }
           - { family: alpine, base: alpine:3.24 }
-          - { family: alpine, base: alpine:latest }
           - { family: debian, base: debian:trixie-slim }
-          - { family: debian, base: debian:unstable-slim }
         ssl: [gnutls, mbedtls, openssl]
     steps:
       - name: Checkout code

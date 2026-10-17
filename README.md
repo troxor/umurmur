@@ -1,12 +1,36 @@
 # uMurmur
  
-[![Build with Docker](https://github.com/umurmur/umurmur/actions/workflows/docker.yaml/badge.svg)](https://github.com/umurmur/umurmur/actions/workflows/docker.yaml)
- 
-uMurmur is a minimalistic Mumble server primarily targeted to run on embedded computers, like routers, with an open OS like e.g. OpenWRT. The server part of Mumble is called Murmur, hence the name uMurmur. It is available as a precompiled package for quite a lot distributions. Check your distribution's package repository.
- 
+[![Docker (stable)](https://github.com/troxor/umurmur/actions/workflows/docker-stable.yaml/badge.svg)](https://github.com/troxor/umurmur/actions/workflows/docker-stable.yaml?branch=master)
+[![Docker (nightly)](https://github.com/troxor/umurmur/actions/workflows/docker-nightly.yaml/badge.svg)](https://github.com/troxor/umurmur/actions/workflows/docker-nightly.yaml?branch=master)
+
+uMurmur is a minimalistic Mumble server primarily targeted to run on embedded computers, like routers, with an open OS like e.g. OpenWRT. The server part of Mumble is called Murmur, hence the name uMurmur. It is available as a precompiled package for quite a lot of distributions. Check your distribution's package repository.
+
+## Supported Platforms
+
+| Target | Status | Validation |
+|---|---|---|
+| Linux / glibc | Supported | CI |
+| Linux / musl | Supported | CI |
+| OpenBSD | Supported | Manual |
+| FreeBSD | Supported | Manual |
+| NetBSD | Supported | Manual |
+| macOS | Supported | Manual |
+
+CI covers Linux glibc/musl builds in Docker across the SSL backends; BSD and macOS are smoke-tested manually.
+
+## Community adaptations
+
+| Project | Notes |
+|---|---|
+| [umurmur-esp32](https://github.com/troxor/umurmur-esp32) | Experimental ESP32 / ESP-IDF port; maintained separately |
+
 ## Building
 
-[Build instructions](https://github.com/umurmur/umurmur/wiki/Building) can be found in the [wiki](https://github.com/umurmur/umurmur/wiki).
+```shell
+cmake -S . -B build -DSSL=openssl
+cmake --build build
+```
+
  
 ## Contributors
 
@@ -226,8 +250,6 @@ uMurmur is a minimalistic Mumble server primarily targeted to run on embedded co
 
 ## Support
 
-Documentation: Please consult the [Wiki](https://github.com/umurmur/umurmur/wiki) 
+Bug reports: [Issues](https://github.com/troxor/umurmur/issues) or [Pull Requests](https://github.com/troxor/umurmur/pulls)
 
-Bug reports: [Issues](https://github.com/umurmur/umurmur/issues) or [Pull Requests](https://github.com/umurmur/umurmur/pulls)
-
-Future enhancements: [Discussions](https://github.com/umurmur/umurmur/discussions)
+Future enhancements: [Discussions](https://github.com/troxor/umurmur/discussions)

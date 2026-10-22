@@ -14,6 +14,8 @@ CMAKE_EXTRA=()
 as_root() {
   if [ "$(id -u)" -eq 0 ]; then
     "$@"
+  elif command -v sudo >/dev/null 2>&1; then
+    sudo "$@"
   elif command -v doas >/dev/null 2>&1 && [ -f /etc/doas.conf ]; then
     doas "$@"
   else
@@ -21,12 +23,8 @@ as_root() {
   fi
 }
 
-mbedtls_major_version() {
-  local from_pkg=0 from_hdr=0 header
-  if command -v pkg-config >/dev/null 2>&1 && pkg-config --exists mbedtls 2>/dev/null; then
-    from_pkg="$(pkg-config --modversion mbedtls | cut -d. -f1)"
-    from_pkg="${from_pkg:-0}"
-  fi
+mbedtls_major_from_headers() {
+  local header major=0
   for header in \
     /usr/include/mbedtls/build_info.h \
     /usr/include/mbedtls/version.h \
@@ -36,15 +34,43 @@ mbedtls_major_version() {
     /usr/pkg/include/mbedtls/build_info.h \
     /usr/pkg/include/mbedtls/version.h; do
     if [[ -f "$header" ]]; then
-      from_hdr="$(awk '/MBEDTLS_VERSION_MAJOR/{gsub(/[^0-9]/, "", $3); print $3; exit}' "$header")"
-      from_hdr="${from_hdr:-0}"
+      major="$(awk '/^[[:space:]]*#define[[:space:]]+MBEDTLS_VERSION_MAJOR/{gsub(/[^0-9]/, "", $3); print $3; exit}' "$header")"
+      major="${major:-0}"
       break
     fi
   done
-  if [[ "$from_hdr" -ge "$from_pkg" ]]; then
+  echo "$major"
+}
+
+mbedtls_major_version() {
+  local from_dist=0 from_hdr=0
+  case "$PLATFORM" in
+    ubuntu)
+      if dpkg-query -W -f='${Version}' libmbedtls-dev &>/dev/null; then
+        from_dist="$(dpkg-query -W -f='${Version}' libmbedtls-dev | cut -d: -f2 | cut -d- -f1 | cut -d. -f1)"
+      fi
+      ;;
+    macos)
+      if brew list --versions mbedtls &>/dev/null; then
+        from_dist="$(brew list --versions mbedtls | awk '{print $2}' | cut -d. -f1)"
+      fi
+      ;;
+    netbsd)
+      if pkg_info -e mbedtls &>/dev/null; then
+        from_dist="$(pkg_info -Q mbedtls | cut -d- -f2 | cut -d. -f1)"
+      fi
+      ;;
+    openbsd)
+      if pkg_info -e mbedtls &>/dev/null; then
+        from_dist="$(pkg_info -Q mbedtls | cut -d- -f2 | cut -d. -f1)"
+      fi
+      ;;
+  esac
+  from_hdr="$(mbedtls_major_from_headers)"
+  if [[ "$from_hdr" -ge "${from_dist:-0}" ]]; then
     echo "$from_hdr"
   else
-    echo "$from_pkg"
+    echo "${from_dist:-0}"
   fi
 }
 

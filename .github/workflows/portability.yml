@@ -37,8 +37,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner: [ubuntu-24.04, ubuntu-24.04-arm]
-        ssl: [openssl, mbedtls, gnutls]
+        include:
+          - { runner: ubuntu-24.04, ssl: openssl }
+          - { runner: ubuntu-24.04, ssl: gnutls }
+          - { runner: ubuntu-24.04-arm, ssl: openssl }
+          - { runner: ubuntu-24.04-arm, ssl: gnutls }
+          # Ubuntu 24.04 ships mbedTLS 2.28 only; mbedTLS 3+ is covered in Docker CI.
     steps:
       - uses: actions/checkout@v4
         with:
@@ -104,7 +108,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ssl: [openssl, mbedtls, gnutls]
+        ssl: [openssl, gnutls]
+        # NetBSD 10.1 binary mbedtls is 2.28.x; umurmur expects mbedTLS 3+ (see FreeBSD/Docker).
     steps:
       - uses: actions/checkout@v4
         with:

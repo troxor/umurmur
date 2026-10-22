@@ -84,11 +84,6 @@ resolve_cmake_ssl() {
     CMAKE_EXTRA+=(-DMbedTLS_SLOT=mbedtls3)
     return
   fi
-  # Ubuntu 24.04 and NetBSD 10.x ship mbedTLS 4.x; Ubuntu's .deb version can still read 2.x.
-  if [[ "$PLATFORM" == ubuntu || "$PLATFORM" == netbsd ]]; then
-    CMAKE_SSL=mbedtls4
-    return
-  fi
   if [[ "$(mbedtls_major_version)" -ge 4 ]]; then
     CMAKE_SSL=mbedtls4
   fi
@@ -145,7 +140,7 @@ install_openbsd() {
 install_netbsd() {
   export PKG_PATH="https://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/$(uname -m)/$(uname -r | cut -f1,2 -d.)/$(uname -m)/All"
   sudo pkgin -y update
-  sudo pkgin -y install cmake gmake pkg-config libconfig protobuf-c
+  sudo pkgin -y install cmake gmake pkg-config libconfig protobuf-c git-base
   case "$SSL" in
     openssl) ;;
     mbedtls) sudo pkgin -y install mbedtls ;;

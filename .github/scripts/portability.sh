@@ -84,6 +84,11 @@ resolve_cmake_ssl() {
     CMAKE_EXTRA+=(-DMbedTLS_SLOT=mbedtls3)
     return
   fi
+  # Ubuntu 24.04 and NetBSD 10.x ship mbedTLS 4.x; Ubuntu's .deb version can still read 2.x.
+  if [[ "$PLATFORM" == ubuntu || "$PLATFORM" == netbsd ]]; then
+    CMAKE_SSL=mbedtls4
+    return
+  fi
   if [[ "$(mbedtls_major_version)" -ge 4 ]]; then
     CMAKE_SSL=mbedtls4
   fi

@@ -8,11 +8,35 @@ SSL="${2:?SSL backend required (openssl|mbedtls|gnutls)}"
 ROOT="$(cd "$(dirname "$0")/../.." && pwd -P)"
 cd "$ROOT"
 
+CMAKE_SSL="$SSL"
 CMAKE_EXTRA=()
-if [[ "$PLATFORM" == freebsd && "$SSL" == mbedtls ]]; then
-  # security/mbedtls3 installs headers/libs under the mbedtls3 slot.
-  CMAKE_EXTRA+=(-DMbedTLS_SLOT=mbedtls3)
-fi
+
+as_root() {
+  if [ "$(id -u)" -eq 0 ]; then
+    "$@"
+  elif command -v doas >/dev/null 2>&1 && [ -f /etc/doas.conf ]; then
+    doas "$@"
+  else
+    su root -c "$(printf '%q ' "$@")"
+  fi
+}
+
+resolve_cmake_ssl() {
+  CMAKE_SSL="$SSL"
+  if [[ "$SSL" != mbedtls ]]; then
+    return
+  fi
+  # FreeBSD mbedtls3 port is still 3.x (slotted).
+  if [[ "$PLATFORM" == freebsd ]]; then
+    CMAKE_EXTRA+=(-DMbedTLS_SLOT=mbedtls3)
+    return
+  fi
+  if command -v pkg-config >/dev/null 2>&1 && pkg-config --exists mbedtls 2>/dev/null; then
+    if pkg-config --modversion mbedtls | awk -F. '$1 >= 4 { exit 0 } { exit 1 }'; then
+      CMAKE_SSL=mbedtls4
+    fi
+  fi
+}
 
 install_ubuntu() {
   sudo apt-get update
@@ -31,13 +55,13 @@ install_ubuntu() {
 install_macos() {
   brew install cmake libconfig protobuf-c
   case "$SSL" in
-    openssl) brew install openssl ;;
+    openssl) brew install openssl@3 ;;
     mbedtls) brew install mbedtls ;;
     gnutls) brew install gnutls nettle ;;
     *) echo "unknown SSL backend: $SSL" >&2; exit 1 ;;
   esac
   if [[ "$SSL" == openssl ]]; then
-    export OPENSSL_ROOT_DIR="$(brew --prefix openssl)"
+    export OPENSSL_ROOT_DIR="$(brew --prefix openssl@3)"
   fi
 }
 
@@ -52,18 +76,18 @@ install_freebsd() {
 }
 
 install_openbsd() {
-  export PKG_PATH="https://cdn.openbsd.org/pub/OpenBSD/%m/%V/all/%a"
-  doas pkg_add cmake gmake libconfig protobuf-c
+  export PKG_PATH="https://cdn.openbsd.org/pub/OpenBSD/$(uname -r)/packages/$(arch -s)/"
+  as_root pkg_add -U cmake gmake libconfig protobuf-c
   case "$SSL" in
     openssl) ;;
-    mbedtls) doas pkg_add mbedtls ;;
-    gnutls) doas pkg_add gnutls ;;
+    mbedtls) as_root pkg_add -U mbedtls ;;
+    gnutls) as_root pkg_add -U gnutls ;;
     *) echo "unknown SSL backend: $SSL" >&2; exit 1 ;;
   esac
 }
 
 install_netbsd() {
-  export PKG_PATH="https://cdn.netbsd.org/pub/pkgsrc/packages/NetBSD/$(uname -m)/$(uname -r | cut -d. -f1)_$(uname -r | cut -d. -f2)/$(uname -m)/All"
+  export PKG_PATH="https://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/$(uname -m)/$(uname -r | cut -f1,2 -d.)/$(uname -m)/All"
   sudo pkgin -y update
   sudo pkgin -y install cmake gmake pkg-config libconfig protobuf-c
   case "$SSL" in
@@ -82,14 +106,16 @@ build_and_test() {
 
   local -a cmake_args=(
     -S . -B build
-    -DSSL="$SSL"
+    -DSSL="$CMAKE_SSL"
     -DCMAKE_BUILD_TYPE=Debug
     -DUSE_SHAREDMEMORY_API=ON
   )
   if [[ -n "$make_prog" ]]; then
     cmake_args+=(-DCMAKE_MAKE_PROGRAM="$make_prog" -G "Unix Makefiles")
   fi
-  cmake_args+=("${CMAKE_EXTRA[@]}")
+  if ((${#CMAKE_EXTRA[@]} > 0)); then
+    cmake_args+=("${CMAKE_EXTRA[@]}")
+  fi
 
   cmake "${cmake_args[@]}"
   cmake --build build
@@ -105,4 +131,5 @@ case "$PLATFORM" in
   *) echo "unknown platform: $PLATFORM" >&2; exit 1 ;;
 esac
 
+resolve_cmake_ssl
 build_and_test

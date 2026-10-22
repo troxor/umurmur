@@ -22,27 +22,30 @@ as_root() {
 }
 
 mbedtls_major_version() {
-  local major=""
+  local from_pkg=0 from_hdr=0 header
   if command -v pkg-config >/dev/null 2>&1 && pkg-config --exists mbedtls 2>/dev/null; then
-    major="$(pkg-config --modversion mbedtls | cut -d. -f1)"
+    from_pkg="$(pkg-config --modversion mbedtls | cut -d. -f1)"
+    from_pkg="${from_pkg:-0}"
   fi
-  if [[ -z "$major" || "$major" == "0" ]]; then
-    local header
-    for header in \
-      /usr/include/mbedtls/build_info.h \
-      /usr/include/mbedtls/version.h \
-      /opt/homebrew/include/mbedtls/build_info.h \
-      /opt/homebrew/include/mbedtls/version.h \
-      /usr/local/include/mbedtls/build_info.h \
-      /usr/pkg/include/mbedtls/build_info.h \
-      /usr/pkg/include/mbedtls/version.h; do
-      if [[ -f "$header" ]]; then
-        major="$(awk '/MBEDTLS_VERSION_MAJOR/{gsub(/[^0-9]/, "", $3); print $3; exit}' "$header")"
-        break
-      fi
-    done
+  for header in \
+    /usr/include/mbedtls/build_info.h \
+    /usr/include/mbedtls/version.h \
+    /opt/homebrew/include/mbedtls/build_info.h \
+    /opt/homebrew/include/mbedtls/version.h \
+    /usr/local/include/mbedtls/build_info.h \
+    /usr/pkg/include/mbedtls/build_info.h \
+    /usr/pkg/include/mbedtls/version.h; do
+    if [[ -f "$header" ]]; then
+      from_hdr="$(awk '/MBEDTLS_VERSION_MAJOR/{gsub(/[^0-9]/, "", $3); print $3; exit}' "$header")"
+      from_hdr="${from_hdr:-0}"
+      break
+    fi
+  done
+  if [[ "$from_hdr" -ge "$from_pkg" ]]; then
+    echo "$from_hdr"
+  else
+    echo "$from_pkg"
   fi
-  echo "${major:-0}"
 }
 
 resolve_cmake_ssl() {

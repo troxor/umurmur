@@ -21,6 +21,30 @@ as_root() {
   fi
 }
 
+mbedtls_major_version() {
+  local major=""
+  if command -v pkg-config >/dev/null 2>&1 && pkg-config --exists mbedtls 2>/dev/null; then
+    major="$(pkg-config --modversion mbedtls | cut -d. -f1)"
+  fi
+  if [[ -z "$major" || "$major" == "0" ]]; then
+    local header
+    for header in \
+      /usr/include/mbedtls/build_info.h \
+      /usr/include/mbedtls/version.h \
+      /opt/homebrew/include/mbedtls/build_info.h \
+      /opt/homebrew/include/mbedtls/version.h \
+      /usr/local/include/mbedtls/build_info.h \
+      /usr/pkg/include/mbedtls/build_info.h \
+      /usr/pkg/include/mbedtls/version.h; do
+      if [[ -f "$header" ]]; then
+        major="$(awk '/MBEDTLS_VERSION_MAJOR/{gsub(/[^0-9]/, "", $3); print $3; exit}' "$header")"
+        break
+      fi
+    done
+  fi
+  echo "${major:-0}"
+}
+
 resolve_cmake_ssl() {
   CMAKE_SSL="$SSL"
   if [[ "$SSL" != mbedtls ]]; then
@@ -31,10 +55,8 @@ resolve_cmake_ssl() {
     CMAKE_EXTRA+=(-DMbedTLS_SLOT=mbedtls3)
     return
   fi
-  if command -v pkg-config >/dev/null 2>&1 && pkg-config --exists mbedtls 2>/dev/null; then
-    if pkg-config --modversion mbedtls | awk -F. '$1 >= 4 { exit 0 } { exit 1 }'; then
-      CMAKE_SSL=mbedtls4
-    fi
+  if [[ "$(mbedtls_major_version)" -ge 4 ]]; then
+    CMAKE_SSL=mbedtls4
   fi
 }
 

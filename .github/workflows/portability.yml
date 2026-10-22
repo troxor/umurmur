@@ -1,0 +1,122 @@
+name: Portability
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - src/**
+      - cmake/**
+      - CMakeLists.txt
+      - hack/**
+      - .github/workflows/portability.yml
+      - .github/scripts/portability.sh
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - src/**
+      - cmake/**
+      - CMakeLists.txt
+      - hack/**
+      - .github/workflows/portability.yml
+      - .github/scripts/portability.sh
+  schedule:
+    # Weekly, same cadence as Docker (nightly) but offset.
+    - cron: "30 6 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: portability-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux:
+    name: linux (${{ matrix.runner }}, ${{ matrix.ssl }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { runner: ubuntu-24.04, ssl: openssl }
+          - { runner: ubuntu-24.04, ssl: gnutls }
+          - { runner: ubuntu-24.04-arm, ssl: openssl }
+          - { runner: ubuntu-24.04-arm, ssl: gnutls }
+          # Ubuntu 24.04 ships mbedTLS 2.28 only; mbedTLS 3+ is covered in Docker CI.
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Build and test
+        run: .github/scripts/portability.sh ubuntu ${{ matrix.ssl }}
+
+  macos:
+    name: macos (${{ matrix.runner }}, ${{ matrix.ssl }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [macos-14, macos-15-intel]
+        ssl: [openssl, mbedtls, gnutls]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Build and test
+        run: .github/scripts/portability.sh macos ${{ matrix.ssl }}
+
+  freebsd:
+    name: freebsd (14.4, ${{ matrix.ssl }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ssl: [openssl, mbedtls, gnutls]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Build and test
+        uses: cross-platform-actions/action@e0b9770014ba65d5e0815f15b74031c3a635f641 # v1.6.0
+        with:
+          operating_system: freebsd
+          version: "14.4"
+          run: .github/scripts/portability.sh freebsd ${{ matrix.ssl }}
+
+  openbsd:
+    name: openbsd (7.9, ${{ matrix.ssl }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ssl: [openssl, mbedtls, gnutls]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Build and test
+        uses: cross-platform-actions/action@e0b9770014ba65d5e0815f15b74031c3a635f641 # v1.6.0
+        with:
+          operating_system: openbsd
+          architecture: x86-64
+          version: "7.9"
+          run: .github/scripts/portability.sh openbsd ${{ matrix.ssl }}
+
+  netbsd:
+    name: netbsd (10.1, ${{ matrix.ssl }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ssl: [openssl, gnutls]
+        # NetBSD 10.1 binary mbedtls is 2.28.x; umurmur expects mbedTLS 3+ (see FreeBSD/Docker).
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Build and test
+        uses: cross-platform-actions/action@e0b9770014ba65d5e0815f15b74031c3a635f641 # v1.6.0
+        with:
+          operating_system: netbsd
+          version: "10.1"
+          run: .github/scripts/portability.sh netbsd ${{ matrix.ssl }}

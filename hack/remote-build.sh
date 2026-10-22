@@ -2,7 +2,7 @@
 
 # Quick-and-dirty push to VMs for testing builds
 
-[[ -z $1 ]] && echo "Usage: $0 host1 ..."
+[[ -z $1 ]] && { echo "Usage: $0 host1 ..."; exit 1; }
 
 CODE_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]:-$0}")/.." && pwd -P)"
 

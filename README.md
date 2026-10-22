@@ -9,14 +9,14 @@ uMurmur is a minimalistic Mumble server primarily targeted to run on embedded co
 
 | Target | Status | Validation |
 |---|---|---|
-| Linux / glibc | Supported | CI |
-| Linux / musl | Supported | CI |
-| OpenBSD | Supported | Manual |
-| FreeBSD | Supported | Manual |
-| NetBSD | Supported | Manual |
-| macOS | Supported | Manual |
+| Linux / glibc | Supported | CI (Docker + native) |
+| Linux / musl | Supported | CI (Docker) |
+| OpenBSD | Supported | CI |
+| FreeBSD | Supported | CI |
+| NetBSD | Supported | CI |
+| macOS | Supported | CI |
 
-CI covers Linux glibc/musl builds in Docker across the SSL backends; BSD and macOS are smoke-tested manually.
+CI covers Linux (Docker and native Ubuntu), macOS (Homebrew), and BSDs (QEMU) across the SSL backends where distro packages provide them; see `.github/workflows/portability.yml`.
 
 ## Community adaptations
 

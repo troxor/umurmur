@@ -76,7 +76,26 @@ usage help and exit.
 Write PID to file at
 .Ar path .
 .It Fl r
-Run with realtime priority.
+Run with realtime priority using the
+.Sy SCHED_RR
+scheduling policy.
+Available only on systems that provide POSIX priority scheduling; on other
+systems the option is not accepted.
+On Linux, setting the policy requires superuser privileges,
+.Cm CAP_SYS_NICE ,
+or a non-zero
+.Va RLIMIT_RTPRIO
+soft limit
+.Pq for example ,
+setting
+.Cm LimitRTPRIO Ns = Ns 1
+in a systemd unit file .
+.Nm
+applies the scheduling policy after daemonization and before dropping
+privileges.
+If
+.Fn sched_setscheduler
+fails, a warning is logged and the daemon continues at normal priority.
 .It Fl t
 Check that the configuration is valid, but don't start a server.
 .El

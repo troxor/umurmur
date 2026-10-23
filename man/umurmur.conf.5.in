@@ -91,7 +91,8 @@ If empty, administrative functions are disabled.
 .It Ic ban_length Ar seconds
 Length of time, in seconds, which a ban remains active.
 A value of zero causes bans to remain indefinitely.
-The default is zero.
+The default is
+.Qq 3600 .
 .It Ic enable_ban Ar true/false
 Enable client banning.
 The default is

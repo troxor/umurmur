@@ -6,7 +6,8 @@ export CODE_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]:-$0}")/.." && pwd -P)"
 export BUILD_TYPE=debug
 export SHMEM=true
 
-for S in mbedtls openssl gnutls; do
+(( $# )) || set -- mbedtls openssl gnutls
+for S; do
 	cd ${CODE_DIR}
 	rm -rf build-${S} && \
 	cmake -Bbuild-${S} -DSSL=${S} \

@@ -1,0 +1,53 @@
+name: Portability OpenBSD
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - src/**
+      - cmake/**
+      - CMakeLists.txt
+      - hack/**
+      - .github/workflows/portability-openbsd.yml
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - src/**
+      - cmake/**
+      - CMakeLists.txt
+      - hack/**
+      - .github/workflows/portability-openbsd.yml
+  schedule:
+    - cron: "30 6 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: portability-openbsd-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  openbsd:
+    name: openbsd 7.9
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Build and test all SSL backends
+        uses: cross-platform-actions/action@e0b9770014ba65d5e0815f15b74031c3a635f641 # v1.6.0
+        with:
+          operating_system: openbsd
+          architecture: x86-64
+          version: "7.9"
+          run: |
+            export PKG_PATH="https://cdn.openbsd.org/pub/OpenBSD/$(uname -r)/packages/$(arch -s)/"
+            if [ "$(id -u)" -eq 0 ]; then
+              pkg_add -U cmake gmake libconfig protobuf-c mbedtls gnutls zsh
+            elif command -v doas >/dev/null 2>&1; then
+              doas pkg_add -U cmake gmake libconfig protobuf-c mbedtls gnutls zsh
+            else
+              sudo pkg_add -U cmake gmake libconfig protobuf-c mbedtls gnutls zsh
+            fi
+            ./hack/make-all.sh

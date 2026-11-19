@@ -1,0 +1,47 @@
+name: Portability NetBSD
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - src/**
+      - cmake/**
+      - CMakeLists.txt
+      - hack/**
+      - .github/workflows/portability-netbsd.yml
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - src/**
+      - cmake/**
+      - CMakeLists.txt
+      - hack/**
+      - .github/workflows/portability-netbsd.yml
+  schedule:
+    - cron: "30 6 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: portability-netbsd-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  netbsd:
+    name: netbsd 10.1
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Build and test all SSL backends
+        uses: cross-platform-actions/action@e0b9770014ba65d5e0815f15b74031c3a635f641 # v1.6.0
+        with:
+          operating_system: netbsd
+          version: "10.1"
+          run: |
+            export PKG_PATH="https://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/$(uname -m)/$(uname -r | cut -f1,2 -d.)/$(uname -m)/All"
+            sudo pkgin -y update
+            sudo pkgin -y install cmake gmake pkg-config libconfig protobuf-c git-base mbedtls gnutls zsh
+            ./hack/make-all.sh

@@ -3,8 +3,8 @@
 # Quick-and-dirty build against all available SSL libraries
 
 export CODE_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]:-$0}")/.." && pwd -P)"
-export BUILD_TYPE=debug
-export SHMEM=true
+export BUILD_TYPE="${BUILD_TYPE:-debug}"
+export SHMEM="${SHMEM:-true}"
 
 (( $# )) || set -- mbedtls openssl gnutls
 for S; do

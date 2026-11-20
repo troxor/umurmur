@@ -1,4 +1,4 @@
-name: "Portability: FreeBSD"
+name: FreeBSD
 permissions:
   contents: read
 

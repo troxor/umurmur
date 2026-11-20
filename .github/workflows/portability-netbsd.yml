@@ -1,4 +1,4 @@
-name: "Portability: NetBSD"
+name: NetBSD
 permissions:
   contents: read
 

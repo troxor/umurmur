@@ -1,4 +1,4 @@
-name: "Portability: macOS"
+name: macOS
 permissions:
   contents: read
 
@@ -37,6 +37,8 @@ jobs:
         config:
           - { version: 15, runner: "macos-15" }
           - { version: 15, runner: "macos-15-intel" }
+          - { version: 26, runner: "macos-26" }
+          - { version: 26, runner: "macos-26-intel" }
     steps:
       - uses: actions/checkout@v4
         with:

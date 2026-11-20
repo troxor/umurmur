@@ -1,4 +1,4 @@
-name: "Portability: OpenBSD"
+name: OpenBSD
 permissions:
   contents: read
 

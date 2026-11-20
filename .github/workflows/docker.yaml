@@ -1,23 +1,35 @@
-name: Build with Docker
+name: Linux
 permissions:
   contents: read
 
 on:
   push:
+    branches: [master]
     paths:
       - src/**
       - cmake/**
       - CMakeLists.txt
       - Dockerfile.*
-      - .github/workflows/docker.yaml
+      - .github/workflows/docker.yml
   pull_request:
     types: [opened, synchronize]
+    paths:
+      - src/**
+      - cmake/**
+      - CMakeLists.txt
+      - Dockerfile.*
+      - .github/workflows/docker.yml
   schedule:
-    - cron: "0 12 * * 1"
+    - cron: "30 6 * * 1"
   workflow_dispatch:
 
+concurrency:
+  group: portability-linux-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build:
+  linux:
+    name: "${{ matrix.config.base }}"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -26,16 +38,13 @@ jobs:
           - { family: alpine, base: alpine:3.22 }
           - { family: alpine, base: alpine:3.23 }
           - { family: alpine, base: alpine:3.24 }
-          - { family: alpine, base: alpine:latest }
           - { family: debian, base: debian:trixie-slim }
-          - { family: debian, base: debian:unstable-slim }
-        ssl: [gnutls, mbedtls, openssl]
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Containerized build
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Build and test all SSL backends
         run: |
-          docker build -f Dockerfile.${{ matrix.config.family }} \
-            --build-arg BASE_IMAGE=${{ matrix.config.base }} \
-            --build-arg SSL=${{ matrix.ssl }} .
+          docker build --target build \
+            -f Dockerfile.${{ matrix.config.family }} \
+            --build-arg BASE_IMAGE=${{ matrix.config.base }} .

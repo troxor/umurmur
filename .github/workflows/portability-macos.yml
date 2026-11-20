@@ -1,4 +1,4 @@
-name: Portability macOS
+name: "Portability: macOS"
 permissions:
   contents: read
 
@@ -29,12 +29,14 @@ concurrency:
 
 jobs:
   macos:
-    name: ${{ matrix.runner }}
-    runs-on: ${{ matrix.runner }}
+    name: "macOS: ${{ matrix.config.version }}"
+    runs-on: ${{ matrix.config.runner }}
     strategy:
       fail-fast: false
       matrix:
-        runner: [macos-14, macos-15-intel]
+        config:
+          - { version: 15, runner: "macos-15" }
+          - { version: 15, runner: "macos-15-intel" }
     steps:
       - uses: actions/checkout@v4
         with:

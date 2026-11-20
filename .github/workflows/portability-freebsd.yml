@@ -1,4 +1,4 @@
-name: Portability FreeBSD
+name: "Portability: FreeBSD"
 permissions:
   contents: read
 
@@ -29,17 +29,23 @@ concurrency:
 
 jobs:
   freebsd:
-    name: freebsd 14.4
+    name: "FreeBSD: ${{ matrix.config.version }}"
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - { version: "14.5", ssl: "mbedtls openssl gnutls" }
+          - { version: "15.1", ssl: "mbedtls openssl gnutls" }
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
       - name: Build and test all SSL backends
-        uses: cross-platform-actions/action@e0b9770014ba65d5e0815f15b74031c3a635f641 # v1.6.0
+        uses: cross-platform-actions/action@30cde56b87a128507bebea9531205087890ee360 # v1.8.0
         with:
           operating_system: freebsd
-          version: "14.4"
+          version: ${{ matrix.config.version }}
           run: |
             sudo pkg install -y cmake gmake pkgconf libconfig protobuf-c mbedtls3 gnutls zsh
-            ./hack/make-all.sh
+            ./hack/make-all.sh ${{ matrix.config.ssl }}

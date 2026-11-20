@@ -29,7 +29,7 @@ concurrency:
 
 jobs:
   openbsd:
-    name: "OpenBSD: ${{ matrix.config.version }}"
+    name: "${{ matrix.config.version }}"
     strategy:
       fail-fast: false
       matrix:
@@ -48,6 +48,5 @@ jobs:
           architecture: x86-64
           version: ${{ matrix.config.version }}
           run: |
-            export PKG_PATH="https://cdn.openbsd.org/pub/OpenBSD/$(uname -r)/packages/$(arch -s)/"
             sudo pkg_add -U cmake gmake libconfig protobuf-c mbedtls gnutls zsh
             ./hack/make-all.sh ${{ matrix.config.ssl }}

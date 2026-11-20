@@ -29,7 +29,7 @@ concurrency:
 
 jobs:
   freebsd:
-    name: "FreeBSD: ${{ matrix.config.version }}"
+    name: "${{ matrix.config.version }}"
     strategy:
       fail-fast: false
       matrix:

@@ -29,7 +29,7 @@ concurrency:
 
 jobs:
   macos:
-    name: "macOS: ${{ matrix.config.version }}"
+    name: "${{ matrix.config.runner }}"
     runs-on: ${{ matrix.config.runner }}
     strategy:
       fail-fast: false
